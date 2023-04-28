@@ -26,6 +26,7 @@ public class PlatformerNavMesh : MonoBehaviour
     public float StandardGravityDecceleration = 9.81f;
 
 
+
     void Awake()
     {
         A_AI = GameObject.FindObjectOfType<AIPlatformPlayer>();
@@ -33,8 +34,18 @@ public class PlatformerNavMesh : MonoBehaviour
         Physics2D.queriesStartInColliders = true;
         A_Nodes = new PlatformerNavMeshNode[0,0];
 
+        CreateGrid();
+        Debug.Log(A_Nodes.GetLength(0) + ", " + A_Nodes.GetLength(1));
 
+    }
 
+    public void SpawnRandomTreasure()
+    {
+        PlatformerNavMeshNode A_keyLocation = A_Nodes[Random.Range(0, A_Nodes.GetLength(0) - 1), Random.Range(0, A_Nodes.GetLength(1) - 1)];
+    }
+
+    public void CreateGrid()
+    {
         if (A_Map)
         {
             Tilemap[] tileMaps = A_Map.GetComponentsInChildren<Tilemap>();
@@ -67,8 +78,8 @@ public class PlatformerNavMesh : MonoBehaviour
                 A_GridSize = new Rect(left, bottom, right - left, top - bottom);
                 A_Nodes = new PlatformerNavMeshNode[Mathf.FloorToInt(verticalSize), Mathf.FloorToInt(horizontalSize)];
 
-                
-                
+
+
 
                 for (int i = 0; i < Mathf.FloorToInt(verticalSize); ++i)
                 {
@@ -84,14 +95,14 @@ public class PlatformerNavMesh : MonoBehaviour
                 {
                     for (int j = 0; j < Mathf.FloorToInt(horizontalSize); ++j)
                     {
-                        PlatformerNavMeshNode up         = (i - 1) >= 0 ?                                                                            A_Nodes[i - 1, j]        : null;
-                        PlatformerNavMeshNode upRight    = (i - 1) >= 0 ? (j + 1) < Mathf.FloorToInt(horizontalSize) ?                               A_Nodes[i - 1, j + 1]  : null : null;
-                        PlatformerNavMeshNode right      = (j + 1) < Mathf.FloorToInt(horizontalSize) ?                                              A_Nodes[i, j + 1]        : null;
-                        PlatformerNavMeshNode downRight  = (i + 1) < Mathf.FloorToInt(verticalSize) ? (j + 1) < Mathf.FloorToInt(horizontalSize) ?   A_Nodes[i + 1, j + 1]    : null : null;
-                        PlatformerNavMeshNode down       = (i + 1) < Mathf.FloorToInt(verticalSize) ?                                                A_Nodes[i + 1, j]        : null;
-                        PlatformerNavMeshNode downLeft   = (i + 1) < Mathf.FloorToInt(verticalSize) ? (j - 1) >= 0 ?                                 A_Nodes[i + 1, j - 1] : null : null;
-                        PlatformerNavMeshNode left       = (j - 1) >= 0 ?                                                                            A_Nodes[i, j - 1]        : null;
-                        PlatformerNavMeshNode upLeft     = (i - 1) >= 0 ? (j - 1) >= 0 ?                                                             A_Nodes[i - 1, j - 1]  : null : null;
+                        PlatformerNavMeshNode up = (i - 1) >= 0 ? A_Nodes[i - 1, j] : null;
+                        PlatformerNavMeshNode upRight = (i - 1) >= 0 ? (j + 1) < Mathf.FloorToInt(horizontalSize) ? A_Nodes[i - 1, j + 1] : null : null;
+                        PlatformerNavMeshNode right = (j + 1) < Mathf.FloorToInt(horizontalSize) ? A_Nodes[i, j + 1] : null;
+                        PlatformerNavMeshNode downRight = (i + 1) < Mathf.FloorToInt(verticalSize) ? (j + 1) < Mathf.FloorToInt(horizontalSize) ? A_Nodes[i + 1, j + 1] : null : null;
+                        PlatformerNavMeshNode down = (i + 1) < Mathf.FloorToInt(verticalSize) ? A_Nodes[i + 1, j] : null;
+                        PlatformerNavMeshNode downLeft = (i + 1) < Mathf.FloorToInt(verticalSize) ? (j - 1) >= 0 ? A_Nodes[i + 1, j - 1] : null : null;
+                        PlatformerNavMeshNode left = (j - 1) >= 0 ? A_Nodes[i, j - 1] : null;
+                        PlatformerNavMeshNode upLeft = (i - 1) >= 0 ? (j - 1) >= 0 ? A_Nodes[i - 1, j - 1] : null : null;
 
                         A_Nodes[i, j].Init(this, up, upRight, right, downRight, down, downLeft, left, upLeft);
                     }
@@ -114,7 +125,7 @@ public class PlatformerNavMesh : MonoBehaviour
 
                             if (PlatformOccupancy[4])
                             {
-                                if (A_Nodes[i, j].A_Neighbours[4] == null) {}
+                                if (A_Nodes[i, j].A_Neighbours[4] == null) { }
                                 else if ((!PlatformOccupancy[6] && PlatformOccupancy[2] && PlatformOccupancy[5]) || (!PlatformOccupancy[6] && PlatformOccupancy[5] && !PlatformOccupancy[2] && !PlatformOccupancy[3]))
                                 {
                                     A_Nodes[i, j].A_TileType = TileAssigner.RightEdge;
@@ -131,7 +142,7 @@ public class PlatformerNavMesh : MonoBehaviour
                                     A_Nodes[i, j].A_TileType = TileAssigner.LeftEdge;
                                     A_Nodes[i, j].A_PlatformID = curPlatfromID;
                                 }
-                                else if ((PlatformOccupancy[2] && !PlatformOccupancy[6] && !PlatformOccupancy[5]) || (PlatformOccupancy[6] && !PlatformOccupancy[3] && !PlatformOccupancy[2]) ||(PlatformOccupancy[6] && PlatformOccupancy[2]) || (!PlatformOccupancy[2] && !PlatformOccupancy[3] && !PlatformOccupancy[6] && !PlatformOccupancy[5]))
+                                else if ((PlatformOccupancy[2] && !PlatformOccupancy[6] && !PlatformOccupancy[5]) || (PlatformOccupancy[6] && !PlatformOccupancy[3] && !PlatformOccupancy[2]) || (PlatformOccupancy[6] && PlatformOccupancy[2]) || (!PlatformOccupancy[2] && !PlatformOccupancy[3] && !PlatformOccupancy[6] && !PlatformOccupancy[5]))
                                 {
                                     A_Nodes[i, j].A_TileType = TileAssigner.Single;
                                     A_Nodes[i, j].A_PlatformID = curPlatfromID;
@@ -161,14 +172,14 @@ public class PlatformerNavMesh : MonoBehaviour
                         {
                             A_Nodes[i, j].A_PlatformConnectors.Add(A_Nodes[i, j].A_Neighbours[2]);
                             Debug.DrawLine(A_Nodes[i, j].transform.position, A_Nodes[i, j].A_PlatformConnectors[0].transform.position, Color.white, 100.0f);
-                            
+
                             bool checkLower = true;
                             PlatformerNavMeshNode tempLowerNode = A_Nodes[i, j];
                             if (A_Nodes[i, j].A_Neighbours[6] != null)
                             {
                                 if (A_Nodes[i, j].A_Neighbours[6].A_IsTerrain) checkLower = false;
                                 else tempLowerNode = A_Nodes[i, j].A_Neighbours[6];
-                            }  
+                            }
                             while (checkLower)
                             {
                                 if (tempLowerNode.A_Neighbours[4] == null) checkLower = false;
@@ -188,15 +199,15 @@ public class PlatformerNavMesh : MonoBehaviour
                         {
                             A_Nodes[i, j].A_PlatformConnectors.Add(A_Nodes[i, j].A_Neighbours[6]);
                             Debug.DrawLine(A_Nodes[i, j].transform.position, A_Nodes[i, j].A_PlatformConnectors[0].transform.position, Color.white, 100.0f);
-                            
+
                             bool checkLower = true;
                             PlatformerNavMeshNode tempLowerNode = A_Nodes[i, j];
                             if (A_Nodes[i, j].A_Neighbours[2] != null)
                             {
                                 if (A_Nodes[i, j].A_Neighbours[2].A_IsTerrain) checkLower = false;
                                 else tempLowerNode = A_Nodes[i, j].A_Neighbours[2];
-                            }  
-                            
+                            }
+
                             while (checkLower)
                             {
                                 if (tempLowerNode.A_Neighbours[4] == null) checkLower = false;
@@ -222,7 +233,7 @@ public class PlatformerNavMesh : MonoBehaviour
                             {
                                 if (A_Nodes[i, j].A_Neighbours[6].A_IsTerrain) checkLower = false;
                                 else tempLowerNode = A_Nodes[i, j].A_Neighbours[6];
-                            }  
+                            }
                             while (checkLower)
                             {
                                 if (tempLowerNode.A_Neighbours[4] == null) checkLower = false;
@@ -243,7 +254,7 @@ public class PlatformerNavMesh : MonoBehaviour
                             {
                                 if (A_Nodes[i, j].A_Neighbours[2].A_IsTerrain) checkLower = false;
                                 else tempLowerNode = A_Nodes[i, j].A_Neighbours[2];
-                            }  
+                            }
                             while (checkLower)
                             {
                                 if (tempLowerNode.A_Neighbours[4] == null) checkLower = false;
@@ -268,7 +279,7 @@ public class PlatformerNavMesh : MonoBehaviour
 
                 float jumpSpeed = A_AI.A_MaxJumpSpeed;
                 float horizontalSpeed = A_AI.A_MaxHorizontalSpeed;
-                
+
                 for (int i = 0; i < Mathf.FloorToInt(verticalSize); ++i)
                 {
                     for (int j = 0; j < Mathf.FloorToInt(horizontalSize); ++j)
@@ -455,8 +466,6 @@ public class PlatformerNavMesh : MonoBehaviour
         {
             Debug.LogError("Map is value is not set", this);
         }
-
-       // ShowGrid(A_ShowGrid);
 
         Physics2D.queriesStartInColliders = false;
     }
